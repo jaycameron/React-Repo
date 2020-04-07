@@ -5,7 +5,7 @@ import {
   CardImgOverlay,
   CardTitle,
   Breadcrumb,
-  BreadcrumbItem
+  BreadcrumbItem,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ function RenderDirectoryItem({ campsite }) {
 // functions don't contain render or states
 
 function Directory(props) {
-  const directory = props.campsites.map(campsite => {
+  const directory = props.campsites.map((campsite) => {
     return (
       <div key={campsite.id} className="col-md-5 m-1">
         <RenderDirectoryItem campsite={campsite} />

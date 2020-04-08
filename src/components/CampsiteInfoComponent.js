@@ -10,35 +10,41 @@ import {
   ModalHeader,
   Label,
   Modal,
-  ModalBody
+  ModalBody,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 // all classes have been changed to a function, which means that render is no longer required, instead campsites and comments are call whith another function.
 
-const required = val => val && val.length;
-const maxLength = len => val => !val || val.length <= len;
-const minLength = len => val => val && val.length >= len;
+const required = (val) => val && val.length;
+const maxLength = (len) => (val) => !val || val.length <= len;
+const minLength = (len) => (val) => val && val.length >= len;
 
 class CommentForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isModalOpen: false
+      isModalOpen: false,
     };
 
     this.toggleModal = this.toggleModal.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit(values) {
-    console.log('Current state is: ' + JSON.stringify(values));
-    alert('Current state is: ' + JSON.stringify(values));
+    this.toggleModal();
+    this.props.addComment(
+      this.props.campsiteId,
+      values.rating,
+      values.author,
+      values.text
+    );
   }
 
   toggleModal() {
     this.setState({
-      isModalOpen: !this.state.isModalOpen
+      isModalOpen: !this.state.isModalOpen,
     });
   }
   render() {
@@ -51,7 +57,7 @@ class CommentForm extends Component {
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
           <ModalHeader toggle={this.toggleModal}> Submit Comment </ModalHeader>
           <ModalBody>
-            <LocalForm onSubmit={values => this.handleSubmit(values)}>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
               <div className="form-group">
                 <Label htmlFor="rating"> Rating </Label>
                 <Control.select
@@ -77,7 +83,7 @@ class CommentForm extends Component {
                   validators={{
                     required,
                     minLength: minLength(2),
-                    maxLength: maxLength(15)
+                    maxLength: maxLength(15),
                   }}
                 />
                 <Errors
@@ -88,7 +94,7 @@ class CommentForm extends Component {
                   messages={{
                     required: 'Required',
                     minLength: 'Must be at least 2 characters',
-                    maxLength: 'Must be 15 characters or less'
+                    maxLength: 'Must be 15 characters or less',
                   }}
                 />
               </div>
@@ -100,7 +106,7 @@ class CommentForm extends Component {
                   id="text"
                   name="text "
                   validators={{
-                    required
+                    required,
                   }}
                 />
                 <Errors
@@ -111,7 +117,7 @@ class CommentForm extends Component {
                   component="div"
                   name="text"
                   messages={{
-                    required: 'Text Required'
+                    required: 'Text Required',
                   }}
                 />
               </div>
@@ -142,12 +148,12 @@ function RenderCampsite({ campsite }) {
   );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, campsiteId }) {
   if (comments) {
     return (
       <div className="col-md-5 m-1">
         <h4> Comments </h4>
-        {comments.map(comment => {
+        {comments.map((comment) => {
           return (
             <div key={comment.id}>
               <p>
@@ -156,13 +162,13 @@ function RenderComments({ comments }) {
                 {new Intl.DateTimeFormat('en-US', {
                   year: 'numeric',
                   month: 'short',
-                  day: '2-digit'
+                  day: '2-digit',
                 }).format(new Date(Date.parse(comment.date)))}
               </p>{' '}
             </div>
           );
         })}
-        <CommentForm />
+        <CommentForm campsiteId={campsiteId} addComment={addComment} />
       </div>
     );
   }
@@ -170,6 +176,26 @@ function RenderComments({ comments }) {
 }
 
 function CampsiteInfo(props) {
+  if (props.isLoading) {
+    return (
+      <div className="containter">
+        <div className="row">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+  if (props.errMess) {
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <h4> {props.errMess}</h4>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (props.campsite) {
     return (
       <div className="container">
@@ -187,7 +213,11 @@ function CampsiteInfo(props) {
         </div>
         <div className="row">
           <RenderCampsite campsite={props.campsite} />
-          <RenderComments comments={props.comments} />
+          <RenderComments
+            comments={props.comments}
+            addComment={props.addComment}
+            campsiteId={props.campsite.id}
+          />
         </div>
       </div>
     );

@@ -39,6 +39,7 @@ class CommentForm extends Component {
       values.rating,
       values.author,
       values.text
+      // ^addComment passed to handleSubmit to be activated when activated it will create an action with the values from the Form, then the action is dispatched to the reducer which updates the state
     );
   }
 
@@ -149,6 +150,7 @@ function RenderCampsite({ campsite }) {
 }
 
 function RenderComments({ comments, addComment, campsiteId }) {
+  // ^ addComment and campsiteId must be added here because it (like comments) is also apart of Displaying (rendering) comments on the page
   if (comments) {
     return (
       <div className="col-md-5 m-1">
@@ -169,6 +171,7 @@ function RenderComments({ comments, addComment, campsiteId }) {
           );
         })}
         <CommentForm campsiteId={campsiteId} addComment={addComment} />
+        {/* addComment is  passed to CommentForm to be used in the CommentForm component, below */}
       </div>
     );
   }
@@ -217,6 +220,8 @@ function CampsiteInfo(props) {
             comments={props.comments}
             addComment={props.addComment}
             campsiteId={props.campsite.id}
+            // ^ addcomment rendered here to display when clicked (go above)
+            // this is receiving this prop from Main ASK Nick how, Main is not being imported..?
           />
         </div>
       </div>

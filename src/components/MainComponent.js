@@ -23,8 +23,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   addComment: (campsiteId, rating, author, text) =>
     addComment(campsiteId, rating, author, text),
+  // ^ addComment is passed in from the action creator with the same properties as are created there, look at the bottom
   fetchCampsites: () => fetchCampsites(),
 };
+// ^
 
 class Main extends Component {
   componentDidMount() {
@@ -64,6 +66,7 @@ class Main extends Component {
             (comment) => comment.campsiteId === +match.params.campsiteId
           )}
           addComment={this.props.addComment}
+          // ^addComment can now be passed in to CampsiteInfo BECAUSE it was made available in the mapDTProps
         />
       );
     };
@@ -94,3 +97,5 @@ class Main extends Component {
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
+//this is the connect function connecting this component to the store so it can recieve data that it needs from the store
+// matchDispatchToProps makes the addComment action creator function (above) available in the maincomponent as a prop

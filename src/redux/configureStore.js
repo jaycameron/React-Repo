@@ -19,3 +19,4 @@ export const ConfigureStore = () => {
 
   return store;
 };
+// ^this is the createStore function that combines all the reducers since Redux can only accept one root reducer
